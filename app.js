@@ -12,6 +12,9 @@ const table_width = 3.0;
 const grid_spacing = 0.05;
 
 
+
+
+
 let table_height;
 var width, width2;
 var height, height2;
