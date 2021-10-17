@@ -11,16 +11,16 @@ const MAX_CHARGES = 20;
 const table_width = 3.0;
 const grid_spacing = 0.05;
 
-
-
-
-
 let table_height;
 var width, width2;
 var height, height2;
 var position = [];
 var valores = [];
 var vertices = [];
+var cargapositiva = 1.602176565*(10^(-19));
+var carganegativa = - 1.602176565*(10^(-19));
+var constCoulomb = 8.99*(10^9);
+var counter = 0;
 
 function animate()
 {
@@ -92,9 +92,16 @@ function setup(shaders)
         const xvec = (table_width*x/canvas.width) - constx;
         const yvec = consty - (table_height*y/canvas.height);
 
-        vertices.push(vec2(xvec, yvec));
-        points++;
+        position.push(vec2(xvec, yvec));
+        counter++;
 
+        if(event.shiftKey){
+            valores[counter].push(carganegativa);
+
+        } else {
+            valores[counter].push(cargapositiva);
+        }
+        
         const aBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, aBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, MV.flatten(vertices), gl.STATIC_DRAW);
@@ -104,6 +111,7 @@ function setup(shaders)
         gl.enableVertexAttribArray(vPosition);
 
     });
+
 
     const aBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, aBuffer);
