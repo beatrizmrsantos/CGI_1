@@ -68,16 +68,6 @@ function setup(shaders)
         }
     }
 
-    for(let i=0; i<MAX_CHARGES; i++){
-        const uPosition = gl.getUniformLocation(program, "uPosition[" + i + "]");
-        gl.uniform2fv(uPosition, flatten(position[i]));
-    }
-
-    for(let i=0; i<MAX_CHARGES; i++){
-        const ePosition = gl.getUniformLocation(program, "ePosition[" + i + "]");
-        gl.uniform2fv(ePosition, flatten(valores[i]));
-    }
-
 
     canvas.addEventListener("click", function(event) {
         const x = event.offsetX;
@@ -87,13 +77,26 @@ function setup(shaders)
         const yvec = consty - (table_height*y/canvas.height);
 
         position.push(vec2(xvec, yvec));
-        counter++;
 
         if(event.shiftKey){
-            valores[counter].push(carganegativa);
+            valores[counter] = carganegativa;
 
         } else {
-            valores[counter].push(cargapositiva);
+            valores[counter] = cargapositiva;
+        }
+
+        counter++;
+
+        console.log(position[0]);
+
+        for(let i=0; i<MAX_CHARGES; i++){
+            const uPosition = gl.getUniformLocation(program, "uPosition[" + i + "]");
+            gl.uniform2fv(uPosition, flatten(position[i]));
+        }
+    
+        for(let i=0; i<MAX_CHARGES; i++){
+            const ePosition = gl.getUniformLocation(program, "ePosition[" + i + "]");
+            gl.uniform2fv(ePosition, flatten(valores[i]));
         }
         
         const aBuffer = gl.createBuffer();
@@ -105,6 +108,7 @@ function setup(shaders)
         gl.enableVertexAttribArray(vPosition);
 
     });
+
 
 
     const aBuffer = gl.createBuffer();
