@@ -10,6 +10,9 @@ var program;
 const MAX_CHARGES = 20;
 const table_width = 3.0;
 const grid_spacing = 0.05;
+const cargapositiva = 1.602176565*(10^(-19));
+const carganegativa = - 1.602176565*(10^(-19));
+const constCoulomb = 8.99*(10^9);
 
 let table_height;
 var width;
@@ -17,9 +20,6 @@ var height;
 var position = [];
 var valores = [];
 var vertices = [];
-var cargapositiva = 1.602176565*(10^(-19));
-var carganegativa = - 1.602176565*(10^(-19));
-var constCoulomb = 8.99*(10^9);
 var counter = 0;
 
 function animate()
@@ -31,7 +31,7 @@ function animate()
     gl.useProgram(program);
     gl.uniform1f(width, table_width);
     gl.uniform1f(height, table_height);
-    gl.drawArrays(gl.POINTS, 0, position.length);
+    gl.drawArrays(gl.POINTS, 0, vertices.length);
 
 }
 
