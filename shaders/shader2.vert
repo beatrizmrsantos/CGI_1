@@ -5,7 +5,7 @@ uniform float table_height;
 
 uniform float uTheta;
 
-uniform int atual;
+uniform int counter;
 
 const int MAX_CHARGES = 20;
 //posicoes cargas
@@ -28,7 +28,7 @@ void main()
     gl_Position.w = 1.0;
     */
 
-    if(ePosition[atual] == 0.0){
+    if(ePosition[counter] == 0.0){
         gl_Position.x = -sin(uTheta)*y + cos(uTheta)*x;
         gl_Position.y = sin(uTheta)*x + cos(uTheta)*y;
         gl_Position.z = 0.0;

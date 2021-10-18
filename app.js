@@ -81,7 +81,7 @@ function setup(shaders)
     height = gl.getUniformLocation(program, "table_height");
 
     thetaLoc = gl.getUniformLocation(atmos, "uTheta");
-    number = gl.getUniformLocation(atmos, "atual");
+    number = gl.getUniformLocation(atmos, "counter");
 
     width2 = gl.getUniformLocation(atmos, "table_width");
     height2 = gl.getUniformLocation(atmos, "table_height");
@@ -92,7 +92,7 @@ function setup(shaders)
     for(let x =  -constx + 0.05; x <= constx; x += grid_spacing) {
         for(let y = -consty; y <= consty; y += grid_spacing) {
             vertices.push(MV.vec2(x, y));
-            //vertices.push(MV.vec2(x, y));
+            vertices.push(MV.vec2(x, y));
         }
     }
 
@@ -118,23 +118,23 @@ function setup(shaders)
         /*
         const uPosition = gl.getUniformLocation(atmos, "uPosition[" + atmosnumber + "]");
         gl.uniform2fv(uPosition, position[atmosnumber]);
-        */
+        
         
         const ePosition = gl.getUniformLocation(atmos, "ePosition[" + atmosnumber + "]");
         gl.uniform1f(ePosition, valores[atmosnumber]);
-        
+        */
 
         atmosnumber++;
 
-        /*
+        
         for(let i=0; i<position.length; i++){
-            const uPosition = gl.getUniformLocation(atmos, "uPosition[" + i + "]");
+            const uPosition = gl.getUniformLocation(program, "uPosition[" + i + "]");
             gl.uniform2fv(uPosition, flatten(position[i]));
         }
-        */
+        
         
         for(let i=0; i<valores.length; i++){
-            const ePosition = gl.getUniformLocation(atmos, "ePosition[" + i + "]");
+            const ePosition = gl.getUniformLocation(program, "ePosition[" + i + "]");
             gl.uniform1f(ePosition, valores[i]);
         }
         
