@@ -3,12 +3,6 @@ attribute vec4 vPosition;
 uniform float table_width;
 uniform float table_height;
 
-const int MAX_CHARGES = 20;
-//posicoes cargas
-uniform vec2 uPosition[MAX_CHARGES];
-//valores cargas
-uniform float ePosition[MAX_CHARGES];
-
 void main()
 {
     gl_PointSize = 4.0;

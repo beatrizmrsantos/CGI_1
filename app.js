@@ -5,7 +5,7 @@ import { vec2, flatten, vec4 } from "../../libs/MV.js";
 
 /** @type {WebGLRenderingContext} */
 let gl;
-var program;
+var program, atmos;
 
 const MAX_CHARGES = 20;
 const table_width = 3.0;
@@ -15,12 +15,16 @@ const carganegativa = - 1.602176565*(10^(-19));
 const constCoulomb = 8.99*(10^9);
 
 let table_height;
-var width;
-var height;
+var width, width2;
+var height, height2;
+var thetaLoc;
 var position = [];
 var valores = [];
 var vertices = [];
+var atmosnumber = 0;
 var counter = 0;
+var theta = 0;
+
 
 function animate()
 {
@@ -28,11 +32,18 @@ function animate()
     
     gl.clear(gl.COLOR_BUFFER_BIT);
 
+    theta += 0.01;
+
     gl.useProgram(program);
     gl.uniform1f(width, table_width);
     gl.uniform1f(height, table_height);
-    gl.drawArrays(gl.POINTS, 0, vertices.length);
+    gl.drawArrays(gl.POINTS, 0, vertices.length - atmosnumber);
 
+    gl.useProgram(atmos);
+    gl.uniform1f(width2, table_width);
+    gl.uniform1f(height2, table_height);
+   // gl.uniform1f(thetaLoc, theta);
+    gl.drawArrays(gl.POINTS, vertices.length - atmosnumber, atmosnumber);
 }
 
 function setup(shaders)
@@ -41,7 +52,7 @@ function setup(shaders)
     gl = UTILS.setupWebGL(canvas);
 
     program = UTILS.buildProgramFromSources(gl, shaders["shader1.vert"], shaders["shader1.frag"]);
-    //vetores = UTILS.buildProgramFromSources(gl, shaders["shader1.vert"], shaders["shader2.frag"]);
+    atmos = UTILS.buildProgramFromSources(gl, shaders["shader2.vert"], shaders["shader2.frag"]);
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -57,6 +68,10 @@ function setup(shaders)
     width = gl.getUniformLocation(program, "table_width");
     height = gl.getUniformLocation(program, "table_height");
 
+    width2 = gl.getUniformLocation(atmos, "table_width");
+    height2 = gl.getUniformLocation(atmos, "table_height");
+
+    thetaLoc = gl.getUniformLocation(atmos, "uTheta");
 
     var constx = table_width/2;
     var consty = table_height/2;
@@ -70,13 +85,16 @@ function setup(shaders)
 
 
     canvas.addEventListener("click", function(event) {
-        const x = event.offsetX;
-        const y = event.offsetY;
+        var x = event.offsetX;
+        var y = event.offsetY;
 
-        const xvec = (table_width*x/canvas.width) - constx;
-        const yvec = consty - (table_height*y/canvas.height);
+        var xvec = (table_width*x/canvas.width) - constx;
+        var yvec = consty - (table_height*y/canvas.height);
 
         position.push(vec2(xvec, yvec));
+        vertices.push(vec2(xvec, yvec));
+
+        atmosnumber++;
 
         if(event.shiftKey){
             valores[counter] = carganegativa;
@@ -87,17 +105,16 @@ function setup(shaders)
 
         counter++;
 
-        console.log(position[0]);
-
+        /*
         for(let i=0; i<MAX_CHARGES; i++){
-            const uPosition = gl.getUniformLocation(program, "uPosition[" + i + "]");
+            const uPosition = gl.getUniformLocation(atmos, "uPosition[" + i + "]");
             gl.uniform2fv(uPosition, flatten(position[i]));
         }
     
         for(let i=0; i<MAX_CHARGES; i++){
-            const ePosition = gl.getUniformLocation(program, "ePosition[" + i + "]");
+            const ePosition = gl.getUniformLocation(atmos, "ePosition[" + i + "]");
             gl.uniform2fv(ePosition, flatten(valores[i]));
-        }
+        }*/
         
         const aBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, aBuffer);
@@ -125,4 +142,4 @@ function setup(shaders)
     window.requestAnimationFrame(animate);
 }
 
-UTILS.loadShadersFromURLS(["shader1.vert", "shader1.frag", "shader2.frag"]).then(s => setup(s));
+UTILS.loadShadersFromURLS(["shader1.vert", "shader2.vert", "shader1.frag", "shader2.frag"]).then(s => setup(s));
