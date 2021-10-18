@@ -5,6 +5,8 @@ uniform float table_height;
 
 uniform float uTheta;
 
+uniform int atual;
+
 const int MAX_CHARGES = 20;
 //posicoes cargas
 uniform vec2 uPosition[MAX_CHARGES];
@@ -15,16 +17,29 @@ uniform float ePosition[MAX_CHARGES];
 void main()
 {
     gl_PointSize = 4.0;
-    gl_Position = vPosition / vec4(table_width/2.0, table_height/2.0, 1, 1);
-
+    //gl_Position = vPosition / vec4(table_width/2.0, table_height/2.0, 1, 1);
 
     float x = vPosition.x / (table_width/2.0);
     float y = vPosition.y / (table_height/2.0);
 
-    gl_Position.x = -sin(uTheta)*y + cos(uTheta)*x;
+    /*gl_Position.x = -sin(uTheta)*y + cos(uTheta)*x;
     gl_Position.y = sin(uTheta)*x + cos(uTheta)*y;
-    gl_Position.y = 0.0;
+    gl_Position.z = 0.0;
     gl_Position.w = 1.0;
+    */
 
+    if(ePosition[atual] == 0.0){
+        gl_Position.x = -sin(uTheta)*y + cos(uTheta)*x;
+        gl_Position.y = sin(uTheta)*x + cos(uTheta)*y;
+        gl_Position.z = 0.0;
+        gl_Position.w = 1.0;
+    } else {
+        gl_Position.x = -sin(-uTheta)*y + cos(-uTheta)*x;
+        gl_Position.y = sin(-uTheta)*x + cos(-uTheta)*y;
+        gl_Position.z = 0.0;
+        gl_Position.w = 1.0;
+    }
+
+    
 }
 

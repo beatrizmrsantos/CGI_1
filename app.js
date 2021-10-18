@@ -10,20 +10,21 @@ var program, atmos;
 const MAX_CHARGES = 20;
 const table_width = 3.0;
 const grid_spacing = 0.05;
-const cargapositiva = 1.602176565*(10^(-19));
-const carganegativa = - 1.602176565*(10^(-19));
-const constCoulomb = 8.99*(10^9);
+const cargapositiva = 1.602176565*Math.pow(10, -19);
+const carganegativa = - 1.602176565*Math.pow(10, -19);
+const constCoulomb = 8.99*Math.pow(10, 9);
 
 let table_height;
 var width, width2;
 var height, height2;
-var thetaLoc;
-var position = [];
-var valores = [];
+var thetaLoc, number;
+var position = [MAX_CHARGES];
+var valores = [MAX_CHARGES];
 var vertices = [];
+//var angulos = [MAX_CHARGES];
 var atmosnumber = 0;
-var counter = 0;
 var theta = 0;
+let direction = true;
 
 
 function animate()
@@ -31,6 +32,11 @@ function animate()
     window.requestAnimationFrame(animate);
     
     gl.clear(gl.COLOR_BUFFER_BIT);
+
+    /*
+    for(let i=0; i<angulos.length; i++){
+        angulos[i] += 0.01;
+    }*/
 
     theta += 0.01;
 
@@ -42,8 +48,14 @@ function animate()
     gl.useProgram(atmos);
     gl.uniform1f(width2, table_width);
     gl.uniform1f(height2, table_height);
-   // gl.uniform1f(thetaLoc, theta);
-    gl.drawArrays(gl.POINTS, vertices.length - atmosnumber, atmosnumber);
+
+    gl.uniform1i(number, 0);
+    gl.uniform1f(thetaLoc, theta);
+    
+    if(direction){
+        gl.drawArrays(gl.POINTS, vertices.length - atmosnumber, atmosnumber);
+    }
+    
 }
 
 function setup(shaders)
@@ -68,10 +80,11 @@ function setup(shaders)
     width = gl.getUniformLocation(program, "table_width");
     height = gl.getUniformLocation(program, "table_height");
 
+    thetaLoc = gl.getUniformLocation(atmos, "uTheta");
+    number = gl.getUniformLocation(atmos, "atual");
+
     width2 = gl.getUniformLocation(atmos, "table_width");
     height2 = gl.getUniformLocation(atmos, "table_height");
-
-    thetaLoc = gl.getUniformLocation(atmos, "uTheta");
 
     var constx = table_width/2;
     var consty = table_height/2;
@@ -83,7 +96,6 @@ function setup(shaders)
         }
     }
 
-
     canvas.addEventListener("click", function(event) {
         var x = event.offsetX;
         var y = event.offsetY;
@@ -93,29 +105,40 @@ function setup(shaders)
 
         position.push(vec2(xvec, yvec));
         vertices.push(vec2(xvec, yvec));
+        //angulos[atmosnumber] = Math.tanh(yvec/xvec);
+
+
+        if(event.shiftKey){
+            valores[atmosnumber] = carganegativa;
+            
+        } else {
+            valores[atmosnumber] = cargapositiva;
+        }
+
+        /*
+        const uPosition = gl.getUniformLocation(atmos, "uPosition[" + atmosnumber + "]");
+        gl.uniform2fv(uPosition, position[atmosnumber]);
+        */
+        
+        const ePosition = gl.getUniformLocation(atmos, "ePosition[" + atmosnumber + "]");
+        gl.uniform1f(ePosition, valores[atmosnumber]);
+        
 
         atmosnumber++;
 
-        if(event.shiftKey){
-            valores[counter] = carganegativa;
-
-        } else {
-            valores[counter] = cargapositiva;
-        }
-
-        counter++;
-
         /*
-        for(let i=0; i<MAX_CHARGES; i++){
+        for(let i=0; i<position.length; i++){
             const uPosition = gl.getUniformLocation(atmos, "uPosition[" + i + "]");
             gl.uniform2fv(uPosition, flatten(position[i]));
         }
-    
-        for(let i=0; i<MAX_CHARGES; i++){
-            const ePosition = gl.getUniformLocation(atmos, "ePosition[" + i + "]");
-            gl.uniform2fv(ePosition, flatten(valores[i]));
-        }*/
+        */
         
+        for(let i=0; i<valores.length; i++){
+            const ePosition = gl.getUniformLocation(atmos, "ePosition[" + i + "]");
+            gl.uniform1f(ePosition, valores[i]);
+        }
+        
+
         const aBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, aBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, MV.flatten(vertices), gl.STATIC_DRAW);
@@ -124,9 +147,17 @@ function setup(shaders)
         gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vPosition);
 
+
     });
 
 
+    window.addEventListener("keydown", function(event) {
+        if(event.code == "Space"){
+            direction = !direction;
+        }
+    });
+
+    
 
     const aBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, aBuffer);
