@@ -24,10 +24,12 @@ var height, height2;
 var x = table_width/2;;
 var y = 0;
 
-var position = [MAX_CHARGES];
-var values = [MAX_CHARGES];
+var charge = [];
+var values = [];
 var vertices = [];
-var angles = [MAX_CHARGES];
+var position = [];
+var buffer = [];
+var angles = [];
 
 var atomsnumber = 0;
 var theta = 0.01;
@@ -56,7 +58,7 @@ function animate()
     //gl.uniform1f(thetaLoc, theta);
     
     if(direction){
-        gl.drawArrays(gl.POINTS, vertices.length, position.length);
+        gl.drawArrays(gl.POINTS, vertices.length, atomsnumber);
     }
     
 }
@@ -64,9 +66,11 @@ function animate()
 function updatePositions(){
     for(let i=0; i<position.length; i++){
         if(values[i] > 0.0){
-            position[i] = vec2( (-Math.sin(angles[i])*y + Math.cos(angles[i])*x), (Math.sin(angles[i])*x + Math.cos(angles[i])*y) ); 
+            position[i] = vec2( (-Math.sin(angles[i])*y + Math.cos(angles[i])*x), (Math.sin(angles[i])*x + Math.cos(angles[i])*y) );
+            charge[i] = vec3 (position[i].x, position[i].y, values[i]); 
         } else {
             position[i] = vec2( (-Math.sin(-angles[i])*y + Math.cos(-angles[i])*x), (Math.sin(-angles[i])*x + Math.cos(-angles[i])*y) );
+            charge[i] = vec3 (position[i].x, position[i].y, values[i]);
         }
     }
 }
@@ -129,17 +133,17 @@ function setup(shaders)
 
         var xvec = (table_width*x/canvas.width) - constx;
         var yvec = consty - (table_height*y/canvas.height);
-
+        
         position.push(vec2(xvec, yvec));
         
         angles.push(Math.tanh(yvec/xvec));
 
         if(event.shiftKey){
             values.push(chargeneg);
-            //vertices.push(MV.vec3(xvec, yvec, chargeneg));
+            charge.push(vec3(xvec, yvec, chargeneg));
         } else {
             values.push(chargepos);
-            //vertices.push(MV.vec3(xvec, yvec, chargepos));
+            charge.push(MV.vec3(xvec, yvec, chargepos));
         }
 
         /*
@@ -164,20 +168,32 @@ function setup(shaders)
             const ePosition = gl.getUniformLocation(program, "ePosition[" + i + "]");
             gl.uniform1f(ePosition, values[i]);
         }
-        
 
+        buffer = [];
+        for(let i=0; i<vertices.length; i++){
+            buffer.push(vertices[i]);
+        }
+
+        for(let i=0; i<charge.length; i++){
+            buffer.push(charge[i]);
+        }
+    
         aBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, aBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, 2048, gl.STATIC_DRAW);
-
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, MV.flatten(vertices));
-        gl.bufferSubData(gl.ARRAY_BUFFER, vertices.length*16, MV.flatten(position));
         
-        //gl.bufferData(gl.ARRAY_BUFFER, MV.flatten(buffer), gl.STATIC_DRAW);
+        /*
+        gl.bufferData(gl.ARRAY_BUFFER, 2048, gl.STATIC_DRAW);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, MV.flatten(vertices));
+        gl.bufferSubData(gl.ARRAY_BUFFER, vertices.length*4, MV.flatten(position));
+        */
+        
+        gl.bufferData(gl.ARRAY_BUFFER, MV.flatten(buffer), gl.STATIC_DRAW);
 
         vPosition = gl.getAttribLocation(program, "vPosition");
         gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vPosition);
+
+        console.log(buffer.length, vertices.length, charge.length, atomsnumber);
 
     });
 
@@ -189,15 +205,27 @@ function setup(shaders)
     });
 
     
+    buffer = [];
+    for(let i=0; i<vertices.length; i++){
+        buffer.push(vertices[i]);
+    }
+
+    for(let i=0; i<charge.length; i++){
+        buffer.push(charge[i]);
+    }
+
+    //console.log(buffer.length, vertices.length, charge.length);
 
     aBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, aBuffer);
+
+    /*
     gl.bufferData(gl.ARRAY_BUFFER, 2048, gl.STATIC_DRAW);
-
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, MV.flatten(vertices));
-    gl.bufferSubData(gl.ARRAY_BUFFER, vertices.length*16, MV.flatten(position));
+    gl.bufferSubData(gl.ARRAY_BUFFER, vertices.length*4, MV.flatten(position));
+    */
 
-    //gl.bufferData(gl.ARRAY_BUFFER, MV.flatten(buffer), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, MV.flatten(buffer), gl.STATIC_DRAW);
 
     vPosition = gl.getAttribLocation(program, "vPosition");
     gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);

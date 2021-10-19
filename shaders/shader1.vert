@@ -17,7 +17,7 @@ void main()
 {
     gl_PointSize = 4.0;
 
-    float campo = 0.0;
+    //float campo = 0.0;
 
     gl_Position = vPosition / vec4(table_width/2.0, table_height/2.0, 1, 1);
 
