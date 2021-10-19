@@ -19,7 +19,6 @@ const constCoulomb = 8.99*Math.pow(10, 9);
 let table_height;
 var width, width2;
 var height, height2;
-//var thetaLoc, number;
 
 var x = table_width/2;;
 var y = 0;
@@ -42,8 +41,10 @@ function animate()
     
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    updatePositions();
     updateAngles();
+    updatePositions();
+
+    //console.log(angles[0]);
     
     gl.useProgram(program);
     gl.uniform1f(width, table_width);
@@ -54,32 +55,13 @@ function animate()
     gl.uniform1f(width2, table_width);
     gl.uniform1f(height2, table_height);
 
-    //gl.uniform1i(number, 0);
-    //gl.uniform1f(thetaLoc, theta);
     
     if(direction){
-        gl.drawArrays(gl.POINTS, vertices.length, atomsnumber);
+        gl.drawArrays(gl.POINTS, vertices.length, charge.length);
     }
     
 }
 
-function updatePositions(){
-    for(let i=0; i<position.length; i++){
-        if(values[i] > 0.0){
-            position[i] = vec2( (-Math.sin(angles[i])*y + Math.cos(angles[i])*x), (Math.sin(angles[i])*x + Math.cos(angles[i])*y) );
-            charge[i] = vec3 (position[i].x, position[i].y, values[i]); 
-        } else {
-            position[i] = vec2( (-Math.sin(-angles[i])*y + Math.cos(-angles[i])*x), (Math.sin(-angles[i])*x + Math.cos(-angles[i])*y) );
-            charge[i] = vec3 (position[i].x, position[i].y, values[i]);
-        }
-    }
-}
-
-function updateAngles(){
-    for(let i=0; i<angles.length; i++){
-        angles[i] += theta;
-    }
-}
 
 function setup(shaders)
 {
@@ -105,11 +87,6 @@ function setup(shaders)
     width = gl.getUniformLocation(program, "table_width");
     height = gl.getUniformLocation(program, "table_height");
 
-    /*
-    thetaLoc = gl.getUniformLocation(atoms, "uTheta");
-    number = gl.getUniformLocation(atoms, "counter");
-    */
-
     width2 = gl.getUniformLocation(atoms, "table_width");
     height2 = gl.getUniformLocation(atoms, "table_height");
 
@@ -125,8 +102,6 @@ function setup(shaders)
         }
     }
 
-    //console.log(buffer[0], vertices[0], buffer[3], vertices[3]);
-
     canvas.addEventListener("click", function(event) {
         var x = event.offsetX;
         var y = event.offsetY;
@@ -135,25 +110,18 @@ function setup(shaders)
         var yvec = consty - (table_height*y/canvas.height);
         
         position.push(vec2(xvec, yvec));
-        
-        angles.push(Math.tanh(yvec/xvec));
+
+
+        angles.push(calcAngle(xvec, yvec));
+        console.log(angles[angles.length - 1]);
 
         if(event.shiftKey){
             values.push(chargeneg);
-            charge.push(vec3(xvec, yvec, chargeneg));
+            charge.push(MV.vec3(xvec, yvec, chargeneg));
         } else {
             values.push(chargepos);
             charge.push(MV.vec3(xvec, yvec, chargepos));
         }
-
-        /*
-        const uPosition = gl.getUniformLocation(atmos, "uPosition[" + atmosnumber + "]");
-        gl.uniform2fv(uPosition, position[atmosnumber]);
-        
-        
-        const ePosition = gl.getUniformLocation(atmos, "ePosition[" + atmosnumber + "]");
-        gl.uniform1f(ePosition, valores[atmosnumber]);
-        */
 
         atomsnumber++;
 
@@ -168,6 +136,7 @@ function setup(shaders)
             const ePosition = gl.getUniformLocation(program, "ePosition[" + i + "]");
             gl.uniform1f(ePosition, values[i]);
         }
+        
 
         buffer = [];
         for(let i=0; i<vertices.length; i++){
@@ -180,20 +149,14 @@ function setup(shaders)
     
         aBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, aBuffer);
-        
-        /*
-        gl.bufferData(gl.ARRAY_BUFFER, 2048, gl.STATIC_DRAW);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, MV.flatten(vertices));
-        gl.bufferSubData(gl.ARRAY_BUFFER, vertices.length*4, MV.flatten(position));
-        */
-        
         gl.bufferData(gl.ARRAY_BUFFER, MV.flatten(buffer), gl.STATIC_DRAW);
 
         vPosition = gl.getAttribLocation(program, "vPosition");
-        gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vPosition);
 
-        console.log(buffer.length, vertices.length, charge.length, atomsnumber);
+      //  console.log(charge.length);
+        //console.log(buffer.length);
 
     });
 
@@ -214,21 +177,12 @@ function setup(shaders)
         buffer.push(charge[i]);
     }
 
-    //console.log(buffer.length, vertices.length, charge.length);
-
     aBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, aBuffer);
-
-    /*
-    gl.bufferData(gl.ARRAY_BUFFER, 2048, gl.STATIC_DRAW);
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, MV.flatten(vertices));
-    gl.bufferSubData(gl.ARRAY_BUFFER, vertices.length*4, MV.flatten(position));
-    */
-
     gl.bufferData(gl.ARRAY_BUFFER, MV.flatten(buffer), gl.STATIC_DRAW);
 
     vPosition = gl.getAttribLocation(program, "vPosition");
-    gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
 
     gl.viewport(0, 0, canvas.width, canvas.height);
@@ -236,5 +190,56 @@ function setup(shaders)
     
     window.requestAnimationFrame(animate);
 }
+
+function updatePositions(){
+    //console.log(charge[0]);
+    //console.log(position[0]);
+    //console.log(angles[0]);
+
+    for(let i=0; i<position.length; i++){
+        if(values[i] > 0.0){
+            position[i][0] = -Math.sin(angles[i])*y + Math.cos(angles[i])*x;
+            position[i][1] = Math.sin(angles[i])*x + Math.cos(angles[i])*y;
+            charge[i][0] = position[i][0];
+            charge[i][1] = position[i][1];
+
+        } else {
+            position[i][0] = -Math.sin(-angles[i])*y + Math.cos(-angles[i])*x;
+            position[i][1] = Math.sin(-angles[i])*x + Math.cos(-angles[i])*y;
+            charge[i][0] = position[i][0];
+            charge[i][1] = position[i][1]; 
+        }
+    }
+}
+
+function updateAngles(){
+    for(let i=0; i<angles.length; i++){
+        angles[i] += theta;
+    }
+}
+
+function calcAngle(x, y){
+    var hip = Math.sqrt( Math.pow(x, 2) + Math.pow(y, 2) );
+    
+    var angle = Math.asin(y/hip);
+
+    console.log(angle);
+
+    if(x < 0.0 && y > 0.0){
+        angle = Math.PI - angle;
+    }
+
+    if(x < 0.0 && y < 0.0){
+        angle = Math.PI - angle;
+    }
+
+    if(x > 0.0 && y < 0.0){
+        angle = 2*Math.PI + angle;
+    }
+
+    return angle;
+
+}
+
 
 UTILS.loadShadersFromURLS(["shader1.vert", "shader2.vert", "shader1.frag", "shader2.frag"]).then(s => setup(s));

@@ -10,7 +10,7 @@ varying vec4 fColor;
 
 void main()
 {
-    gl_PointSize = 4.0;
+    gl_PointSize = 8.0;
     gl_Position = vPosition / vec4(table_width/2.0, table_height/2.0, 1, 1);
 
     float variable = vPosition.z;
