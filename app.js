@@ -7,7 +7,7 @@ import { vec2, flatten, vec4, vec3 } from "../../libs/MV.js";
 let gl;
 var program, atoms;
 var aBuffer;
-var vPosition
+var vPosition;
 
 const MAX_CHARGES = 20;
 const table_width = 3.0;
@@ -19,6 +19,7 @@ const constCoulomb = 8.99*Math.pow(10, 9);
 let table_height;
 var width, width2;
 var height, height2;
+var counterLoc;
 
 var x = table_width/2;;
 var y = 0;
@@ -106,11 +107,25 @@ function animate()
     
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    
     gl.useProgram(program);
     gl.uniform1f(width, table_width);
     gl.uniform1f(height, table_height);
+    gl.uniform1i(counterLoc, atomsnumber);
+
+    for(let i=0; i<position.length; i++){
+        const uPosition = gl.getUniformLocation(program, "uPosition[" + i + "]");
+        gl.uniform2fv(uPosition, MV.flatten(position[i]));
+    }
+    
+    for(let i=0; i<values.length; i++){
+        const ePosition = gl.getUniformLocation(program, "ePosition[" + i + "]");
+        gl.uniform1f(ePosition, MV.flatten(values[i]));
+    }
+
+    
     gl.drawArrays(gl.POINTS, 0, vertices.length);
+
+
 
     gl.useProgram(atoms);
     gl.uniform1f(width2, table_width);
@@ -149,6 +164,7 @@ function setup(shaders)
 
     width = gl.getUniformLocation(program, "table_width");
     height = gl.getUniformLocation(program, "table_height");
+    counterLoc = gl.getUniformLocation(program, "counter");
 
     width2 = gl.getUniformLocation(atoms, "table_width");
     height2 = gl.getUniformLocation(atoms, "table_height");
@@ -185,18 +201,6 @@ function setup(shaders)
         }
         
         atomsnumber++;
-
-
-        for(let i=0; i<position.length; i++){
-            const uPosition = gl.getUniformLocation(program, "uPosition[" + i + "]");
-            gl.uniform2fv(uPosition, MV.flatten(position[i]));
-        }
-        
-        
-        for(let i=0; i<values.length; i++){
-            const ePosition = gl.getUniformLocation(program, "ePosition[" + i + "]");
-            gl.uniform1f(ePosition, values[i]);
-        }
         
         setBuffer();
 
