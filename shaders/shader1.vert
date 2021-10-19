@@ -21,10 +21,14 @@ void main()
 
     gl_Position = vPosition / vec4(table_width/2.0, table_height/2.0, 1, 1);
 
-    for( int i=0; i<counter; i++){
-        campo += ke * ePosition[i] / ( pow( (uPosition[i].x - vPosition.x), 2.0) + pow( (uPosition[i].y - vPosition.y), 2.0) );
+/*
+    for( int i=0; i<MAX_CHARGES; i++){
+        if(i<counter){
+            campo += ke * ePosition[i] / ( pow( (uPosition[i].x - vPosition.x), 2.0) + pow( (uPosition[i].y - vPosition.y), 2.0) );
+        }
+        
     }
-
+*/
 
 
     
