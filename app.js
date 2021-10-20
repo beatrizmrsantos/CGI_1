@@ -6,23 +6,18 @@ import { vec2, flatten, vec4, vec3 } from "../../libs/MV.js";
 /** @type {WebGLRenderingContext} */
 let gl;
 var program, atoms;
-var aBuffer;
-var vPosition;
 
-const MAX_CHARGES = 20;
+const MAX_CHARGES = 30;
 const table_width = 3.0;
 const grid_spacing = 0.05;
 const chargepos = 1.0;
 const chargeneg = -1.0;
-const constCoulomb = 8.99*Math.pow(10, 9);
+var heightConst;
 
 let table_height;
 var width, width2;
 var height, height2;
 var counterLoc;
-
-var x = table_width/2;;
-var y = 0;
 
 var charge = [];
 var values = [];
@@ -91,11 +86,11 @@ function setBuffer(){
         buffer.push(charge[i]);
     }
 
-    aBuffer = gl.createBuffer();
+    const aBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, aBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, MV.flatten(buffer), gl.STATIC_DRAW);
 
-    vPosition = gl.getAttribLocation(program, "vPosition");
+    const vPosition = gl.getAttribLocation(program, "vPosition");
     gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
 }
@@ -150,6 +145,7 @@ function setup(shaders)
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     table_height = table_width/canvas.width*canvas.height;
+    heightConst = table_height;
 
 
     window.addEventListener("resize", function () {
@@ -173,8 +169,10 @@ function setup(shaders)
 
     for(let x = ( -constx + 0.05); x <= constx; x += grid_spacing) {
         for(let y = -consty; y <= consty; y += grid_spacing) {
-            vertices.push(MV.vec3(x, y, 1.0));
-            vertices.push(MV.vec3(x, y, 2.0));
+            var xr = x + grid_spacing*Math.random();
+            var yr = y + grid_spacing*Math.random();
+            vertices.push(MV.vec3(xr, yr, 1.0));
+            vertices.push(MV.vec3(xr, yr, 2.0));
         }
     }
 
@@ -184,8 +182,9 @@ function setup(shaders)
 
         var xvec = (table_width*x/canvas.width) - constx;
         var yvec = consty - (table_height*y/canvas.height);
-        
-        position.push(vec2(xvec, yvec));
+
+        if( atomsnumber < MAX_CHARGES){
+            position.push(vec2(xvec, yvec));
 
         angles.push(calcAngle(xvec, yvec));
 
@@ -200,6 +199,7 @@ function setup(shaders)
         atomsnumber++;
         
         setBuffer();
+        }
 
     });
 

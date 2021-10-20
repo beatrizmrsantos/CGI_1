@@ -10,7 +10,7 @@ uniform float table_height;
 
 uniform int counter;
 
-const int MAX_CHARGES = 20;
+const int MAX_CHARGES = 30;
 //posicoes cargas
 uniform vec2 uPosition[MAX_CHARGES];
 //valores cargas
