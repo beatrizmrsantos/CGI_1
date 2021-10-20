@@ -12,18 +12,23 @@ const table_width = 3.0;
 const grid_spacing = 0.05;
 const chargepos = 1.0;
 const chargeneg = -1.0;
-var heightConst;
 
 let table_height;
 var width, width2;
 var height, height2;
 var counterLoc;
 
+//vetor das posicoes das cargas
 var charge = [];
+//vetor dos valores das cargas
 var values = [];
+//vetor das posicoes dos ertices
 var vertices = [];
+//vetor das posicoes das cargas para mandar para o uniforme no shader
 var position = [];
+//vetor onde se junta os vertices e as cargas para mandar para o buffer e imprimir no ecra
 var buffer = [];
+//vetor onde guardamos a atualzacao dos angulos das cargas a rodarem
 var angles = [];
 
 var atomsnumber = 0;
@@ -145,7 +150,6 @@ function setup(shaders)
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     table_height = table_width/canvas.width*canvas.height;
-    heightConst = table_height;
 
 
     window.addEventListener("resize", function () {
