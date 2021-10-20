@@ -119,13 +119,11 @@ function animate()
     
     for(let i=0; i<values.length; i++){
         const ePosition = gl.getUniformLocation(program, "ePosition[" + i + "]");
-        gl.uniform1f(ePosition, MV.flatten(values[i]));
+        gl.uniform1f(ePosition, values[i]);
     }
 
     
-    gl.drawArrays(gl.POINTS, 0, vertices.length);
-
-
+    gl.drawArrays(gl.LINES, 0, vertices.length);
 
     gl.useProgram(atoms);
     gl.uniform1f(width2, table_width);
@@ -151,7 +149,7 @@ function setup(shaders)
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    table_height = (canvas.height*table_width)/canvas.width;
+    table_height = table_width/canvas.width*canvas.height;
 
 
     window.addEventListener("resize", function () {

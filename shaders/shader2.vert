@@ -11,6 +11,8 @@ void main()
     gl_PointSize = 8.0;
     gl_Position = vPosition / vec4(table_width/2.0, table_height/2.0, 1, 1);
 
+    gl_Position.z = 0.0;
+
     float variable = vPosition.z;
 
     if(variable > 0.0){
