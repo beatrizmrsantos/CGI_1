@@ -68,13 +68,17 @@ void main(){
         }
     }
 
-    total.x= total.x*pow(10.0, -12.0);
-    total.y= total.y*pow(10.0, -12.0);
-
-    if( sqrt((pow(total.x, 2.0) + pow(total.y, 2.0))) > 0.25){
+    //total.x= total.x*pow(10.0, -12.0);
+    //total.y= total.y*pow(10.0, -12.0);
+    if( sqrt((pow(total.x, 2.0) + pow(total.y, 2.0))) > pow(10.0, 12.0)){
         normal = normalize(total);
         total = 0.25 * normal;
     } 
+
+    total.x= (total.x*0.25) / pow(10.0, 12.0);
+    total.y= (total.y*0.25) / pow(10.0, 12.0);
+
+    
 
     float variable = vPosition.z;
 
