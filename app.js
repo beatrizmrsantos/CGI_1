@@ -107,6 +107,9 @@ function animate()
     
     gl.clear(gl.COLOR_BUFFER_BIT);
 
+    updatePositions();
+    setBuffer();
+
     gl.useProgram(program);
     gl.uniform1f(width, table_width);
     gl.uniform1f(height, table_height);
@@ -122,15 +125,12 @@ function animate()
         gl.uniform1f(ePosition, values[i]);
     }
 
-    
     gl.drawArrays(gl.LINES, 0, vertices.length);
 
     gl.useProgram(atoms);
     gl.uniform1f(width2, table_width);
     gl.uniform1f(height2, table_height);
 
-    updatePositions();
-    setBuffer();
     
     if(direction){
         gl.drawArrays(gl.POINTS, vertices.length, charge.length);
@@ -169,7 +169,6 @@ function setup(shaders)
 
     var constx = table_width/2;
     var consty = table_height/2;
-    y = consty;
 
 
     for(let x = ( -constx + 0.05); x <= constx; x += grid_spacing) {

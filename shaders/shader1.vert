@@ -16,20 +16,10 @@ uniform vec2 uPosition[MAX_CHARGES];
 //valores cargas
 uniform float ePosition[MAX_CHARGES];
 
-void main(){
-    vec2 vetor = vec2(0.0,0.0);
-    vec2 normal= vec2(0.0,0.0);
-    vec2 total = vec2(0.0,0.0);
-    float campo = 0.0;
-    
-    
-    gl_PointSize = 4.0;
-
-    /*
-    // convert angle to hue; returns RGB
+// convert angle to hue; returns RGB
     // colors corresponding to (angle mod TWOPI):
     // 0=red, PI/2=yellow-green, PI=cyan, -PI/2=purple
-    vec3 angle_to_hue(float angle) {
+    vec3 angle_to_hue(float angle){
         angle /= TWOPI;
         return clamp((abs(fract(angle+vec3(3.0, 2.0, 1.0)/3.0)*6.0-3.0)-1.0), 0.0, 1.0);
     }
@@ -45,8 +35,15 @@ void main(){
         float a = atan(f.y, f.x);
         return vec4(angle_to_hue(a-TWOPI), 1.);
     }
-    */
 
+
+void main(){
+    vec2 vetor = vec2(0.0,0.0);
+    vec2 normal= vec2(0.0,0.0);
+    vec2 total = vec2(0.0,0.0);
+    float campo = 0.0;
+    
+    gl_PointSize = 4.0;
 
     for( int i=0; i<MAX_CHARGES; i++){
         if(i<counter){
@@ -54,40 +51,42 @@ void main(){
             if(ePosition[i] < 0.0){
                 vetor.x = (uPosition[i].x - vPosition.x);
                 vetor.y = (uPosition[i].y - vPosition.y);
+                campo = ke * (- ePosition[i] ) / (pow(vetor.x, 2.0) + pow(vetor.y, 2.0));
             } else {
                 vetor.x = (vPosition.x - uPosition[i].x);
                 vetor.y = (vPosition.y - uPosition[i].y);
+                campo = ke * ePosition[i] / (pow(vetor.x, 2.0) + pow(vetor.y, 2.0));
             }
 
-            campo = ke * ePosition[i] / (pow( vetor.x, 2.0) + pow( vetor.y, 2.0));
-            
             normal = normalize(vetor);
 
-            normal.x = normal.x * abs(campo);
-            normal.y = normal.y * abs(campo);
+            normal.x = normal.x * campo;
+            normal.y = normal.y * campo;
 
             total.x += normal.x;
             total.y += normal.y;
-
-            total.x= (total.x*0.25)/table_width;
-            total.y= (total.y*0.25)/table_height;
-            
         }
     }
+
+    total.x= total.x*pow(10.0, -12.0);
+    total.y= total.y*pow(10.0, -12.0);
+
+    if( sqrt((pow(total.x, 2.0) + pow(total.y, 2.0))) > 0.25){
+        normal = normalize(total);
+        total = 0.25 * normal;
+    } 
 
     float variable = vPosition.z;
 
     if(variable == 2.0){
-        gl_Position.x = (vPosition.x + total.x) / (table_width/2.0);
-        gl_Position.y = (vPosition.y + total.y) / (table_height/2.0);
-      
+        gl_Position = vec4(vPosition.x + total.x, vPosition.y + total.y, 1, 1) / vec4(table_width/2.0, table_height/2.0, 1, 1);
     } else {
         gl_Position = vPosition / vec4(table_width/2.0, table_height/2.0, 1, 1);
     }
 
-    //fColor = colorize(total);
-
     gl_Position.z = 0.0;
+
+    fColor = colorize(total);
 
 }
 
