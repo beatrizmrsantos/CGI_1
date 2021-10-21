@@ -15,14 +15,14 @@ void main(){
 
 
     if(fColor == vec4(1.0, 0.0, 0.0, 1.0)){
-        if ( fragmentPosition.y < 0.1 &&  fragmentPosition.y > -0.1 && fragmentPosition.x < 0.5 &&  fragmentPosition.x > -0.5) {
+        if ( fragmentPosition.y < 0.2 &&  fragmentPosition.y > -0.2 && fragmentPosition.x < 0.7 &&  fragmentPosition.x > -0.7) {
             discard;
         }
     } else {
-        if ( fragmentPosition.y < 0.1 &&  fragmentPosition.y > -0.1 && fragmentPosition.x < 0.5 &&  fragmentPosition.x > -0.5) {
+        if ( fragmentPosition.y < 0.2 &&  fragmentPosition.y > -0.2 && fragmentPosition.x < 0.7 &&  fragmentPosition.x > -0.7) {
             discard;
         }
-        if(fragmentPosition.y > -0.5 &&  fragmentPosition.y < 0.5 && fragmentPosition.x > -0.1 &&  fragmentPosition.x < 0.1){
+        if(fragmentPosition.y > -0.7 &&  fragmentPosition.y < 0.7 && fragmentPosition.x > -0.2 &&  fragmentPosition.x < 0.2){
             discard;
         }
     }
