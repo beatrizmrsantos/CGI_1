@@ -22,7 +22,7 @@ var counterLoc;
 var charge = [];
 //vetor dos valores das cargas
 var values = [];
-//vetor das posicoes dos ertices
+//vetor das posicoes dos vertices
 var vertices = [];
 //vetor das posicoes das cargas para mandar para o uniforme no shader
 var position = [];
@@ -130,6 +130,8 @@ function setup(shaders)
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
+        table_height = (table_width/canvas.width)*canvas.height;
+
         gl.viewport(0, 0, canvas.width, canvas.height);
     });
 
@@ -164,18 +166,17 @@ function setup(shaders)
         if( atomsnumber < MAX_CHARGES){
             position.push(vec2(xvec, yvec));
 
-
-        if(event.shiftKey){
-            values.push(chargeneg);
-            charge.push(MV.vec3(xvec, yvec, chargeneg));
-        } else {
-            values.push(chargepos);
-            charge.push(MV.vec3(xvec, yvec, chargepos));
-        }
-        
-        atomsnumber++;
-        
-        setBuffer();
+            if(event.shiftKey){
+                values.push(chargeneg);
+                charge.push(MV.vec3(xvec, yvec, chargeneg));
+            } else {
+                values.push(chargepos);
+                charge.push(MV.vec3(xvec, yvec, chargepos));
+            }
+            
+            atomsnumber++;
+            
+            setBuffer();
         }
 
     });

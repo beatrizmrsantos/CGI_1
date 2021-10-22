@@ -51,14 +51,12 @@ void main(){
             if(ePosition[i] < 0.0){
                 vetor.x = (uPosition[i].x - vPosition.x);
                 vetor.y = (uPosition[i].y - vPosition.y);
-                campo = ke * (- ePosition[i] ) / (pow(vetor.x, 2.0) + pow(vetor.y, 2.0));
+                campo = ke * (- ePosition[i] ) / (distance(vec2(vPosition.x,vPosition.y), uPosition[i]));
             } else {
                 vetor.x = (vPosition.x - uPosition[i].x);
                 vetor.y = (vPosition.y - uPosition[i].y);
-                campo = ke * ePosition[i] / (pow(vetor.x, 2.0) + pow(vetor.y, 2.0));
+                campo = ke * ePosition[i] / (distance(vec2(vPosition.x,vPosition.y), uPosition[i]));
             }
-
-            campo = campo / pow(10.0, 11.0);
 
             normal = normalize(vetor);
 
@@ -68,6 +66,7 @@ void main(){
         }
     }
 
+    total = total / pow(10.0, 11.0);
 
     if( sqrt((pow(total.x, 2.0) + pow(total.y, 2.0))) > 0.25){
         normal = normalize(total);
