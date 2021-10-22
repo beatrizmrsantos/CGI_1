@@ -17,6 +17,7 @@ let table_height;
 var width, width2;
 var height, height2;
 var counterLoc;
+var constx, consty;
 
 //vetor das posicoes das cargas
 var charge = [];
@@ -145,8 +146,8 @@ function setup(shaders)
     width2 = gl.getUniformLocation(atoms, "table_width");
     height2 = gl.getUniformLocation(atoms, "table_height");
 
-    var constx = table_width/2;
-    var consty = table_height/2;
+    constx = table_width/2;
+    consty = table_height/2;
 
 
     for(let x = ( -constx + 0.05); x <= constx; x += grid_spacing) {
@@ -161,6 +162,9 @@ function setup(shaders)
     canvas.addEventListener("click", function(event) {
         var x = event.offsetX;
         var y = event.offsetY;
+
+        constx = table_width/2;
+        consty = table_height/2;
 
         var xvec = (table_width*x/canvas.width) - constx;
         var yvec = consty - (table_height*y/canvas.height);
