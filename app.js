@@ -132,6 +132,8 @@ function setup(shaders)
 
         table_height = (table_width/canvas.width)*canvas.height;
 
+        setBuffer();
+
         gl.viewport(0, 0, canvas.width, canvas.height);
     });
 
