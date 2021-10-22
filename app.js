@@ -28,54 +28,28 @@ var vertices = [];
 var position = [];
 //vetor onde se junta os vertices e as cargas para mandar para o buffer e imprimir no ecra
 var buffer = [];
-//vetor onde guardamos a atualzacao dos angulos das cargas a rodarem
-var angles = [];
 
 var atomsnumber = 0;
-var theta = 0.02;
+var theta = 0.01;
 let direction = true;
-
-
-function calcAngle(x, y){
-    var hip = Math.sqrt( Math.pow(x, 2) + Math.pow(y, 2) );
-    
-    var angle = Math.asin(y/hip);
-
-    if(x < 0.0 && y > 0.0){
-        angle = Math.PI - angle;
-    }
-
-    if(x < 0.0 && y < 0.0){
-        angle = Math.PI - angle;
-    }
-
-    if(x > 0.0 && y < 0.0){
-        angle = 2*Math.PI + angle;
-    }
-
-    return angle;
-}
 
 
 function updatePositions(){
     for(let i=0; i<charge.length; i++){
-        var r = Math.sqrt( Math.pow(charge[i][0], 2) + Math.pow(charge[i][1], 2) );
+        var x = charge[i][0];
+        var y = charge[i][1];
 
         if(charge[i][2] > 0.0){
-            angles[i] = angles[i] + theta;
-
-            charge[i][0] = r * Math.cos(angles[i]);
-            charge[i][1] = r * Math.sin(angles[i]);
-            position[i][0] = charge[i][0];
-            position[i][1] = charge[i][1];
+            charge[i][0] = -Math.sin(theta)*y + Math.cos(theta)*x;
+            charge[i][1] = Math.sin(theta)*x + Math.cos(theta)*y;
+            position[i][0] = x;
+            position[i][1] = y;
         
         } else {
-            angles[i] = angles[i] - theta;
-
-            charge[i][0] = r * Math.cos(angles[i]);
-            charge[i][1] = r * Math.sin(angles[i]);
-            position[i][0] = charge[i][0];
-            position[i][1] = charge[i][1]; 
+            charge[i][0] = -Math.sin(-theta)*y + Math.cos(-theta)*x;
+            charge[i][1] = Math.sin(-theta)*x + Math.cos(-theta)*y;
+            position[i][0] = x;
+            position[i][1] = y;
         }
         
     }
@@ -190,7 +164,6 @@ function setup(shaders)
         if( atomsnumber < MAX_CHARGES){
             position.push(vec2(xvec, yvec));
 
-        angles.push(calcAngle(xvec, yvec));
 
         if(event.shiftKey){
             values.push(chargeneg);

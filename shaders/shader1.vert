@@ -58,39 +58,33 @@ void main(){
                 campo = ke * ePosition[i] / (pow(vetor.x, 2.0) + pow(vetor.y, 2.0));
             }
 
+            campo = campo / pow(10.0, 11.0);
+
             normal = normalize(vetor);
 
-            normal.x = normal.x * campo;
-            normal.y = normal.y * campo;
+            normal = normal * campo;
 
-            total.x += normal.x;
-            total.y += normal.y;
+            total += normal;
         }
     }
 
-    total.x= (total.x*0.25) / pow(10.0, 12.0);
-    total.y= (total.y*0.25) / pow(10.0, 12.0);
-    
-    //total.x= total.x*pow(10.0, -12.0);
-    //total.y= total.y*pow(10.0, -12.0);
+
     if( sqrt((pow(total.x, 2.0) + pow(total.y, 2.0))) > 0.25){
         normal = normalize(total);
         total = 0.25 * normal;
     } 
 
-    
-
     float variable = vPosition.z;
 
     if(variable == 2.0){
         gl_Position = vec4(vPosition.x + total.x, vPosition.y + total.y, 1, 1) / vec4(table_width/2.0, table_height/2.0, 1, 1);
+        gl_Position.z = 0.0;
+        fColor = colorize(total);
+
     } else {
         gl_Position = vPosition / vec4(table_width/2.0, table_height/2.0, 1, 1);
+        fColor = vec4(0.0, 0.0, 0.0, 1);
     }
-
-    gl_Position.z = 0.0;
-
-    fColor = colorize(total);
 
 }
 
