@@ -8,6 +8,7 @@ const float ke = 8.988*pow(10.0, 9.0);
 uniform float table_width;
 uniform float table_height;
 
+//valor com o numero de cargas atuais no ecra
 uniform int counter;
 
 const int MAX_CHARGES = 30;
